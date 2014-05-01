@@ -24,3 +24,20 @@ expiration can be a
 -- minutes
 -- seconds
 
+
+
+So an easy way to play with this on the debug console:
+      require.config({
+          paths: {
+              storage: '/path/to/dir/storage'
+          }
+      });
+
+      require(['storage'], function(storage){
+		window.storage=storage
+	  });
+
+	  window.storage.setItem('wooky', "chewey", {'seconds':5});
+	  window.storage.getItem('wooky');
+	  // Wait 5 seconds - then it will return false
+	  window.storage.getItem('wooky');
