@@ -1,8 +1,8 @@
 /*
-  See README.md
+  https://github.com/funkman/local-storage-expire
+  doc/howto in README.md
 */
 define(function() {
-  "use strict";
   var available= false;
 
   try {
