@@ -12,10 +12,11 @@ sessionStorage.
 
 This is loaded via require.
 
-storage.getItem(key) => value (false if not exists, expired, or not supported)
-storage.setItem(key, value, expiration) => value (false if not exists or not supported)
+storage.getItem(key) => value (null if not supported or key does not exist)
+storage.setItem(key, value, expiration) => void
 expiration can be a
 - undefined - Expire in the lirbary default (5 years)
+- Date - use that as the expiration date
 - number in ms. Expire in "expiration" ms
 - Hash of number increments. Allowed keys:
 -- years
@@ -25,8 +26,12 @@ expiration can be a
 -- seconds
 
 
+This library uses feature detection. This should be compatible with polyfills
+provided they are loaded first.
+
 
 So an easy way to play with this on the debug console:
+
       require.config({
           paths: {
               storage: '/path/to/dir/storage'

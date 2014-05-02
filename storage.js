@@ -15,13 +15,14 @@ define(function() {
       }
       available = true;
   } catch(e) {
-
   }
+
 
   return {
     /*
       expiration = either of
                       time in millis, 0 to remove now
+                      Date object of when to expire
                       hash with any of
                           {
                             years:31,
@@ -33,19 +34,24 @@ define(function() {
 
     */
     setItem : function(key, value, expires){
-      if (!available){return false;}
+      if (!available) {
+        if(console && console.log) console.log("Local store is unavailable, expect bad things")
+        return;
+      }
 
-      if (expires===0 || ((typeof value)==="undefined")) {
+      if (expires===0 || ((typeof value)==="undefined") || value==null) {
         localStorage.removeItem(key);
-        return value;
+        return;
       }
 
 
-      var expireMS = 0;
+      var expireMS = new Date().getTime();
       if ((typeof expires)==="undefined") {
-        expireMS = 5 * 365 * 24 * 3600 * 1000; // 5 year
+        expireMS += 5 * 365 * 24 * 3600 * 1000; // 5 year
+      } else if (expires instanceof Date) {
+        expireMS = expires.getTime();
       } else if ((typeof expires)==="number") {
-        expireMS = expires;
+        expireMS += expires;
       } else {
         if ((typeof expires.years)==="number" && expires.years>0) {
           expireMS += (expires.years * 365 * 24 * 3600 * 1000)
@@ -64,16 +70,20 @@ define(function() {
         }
       }
 
-      var entry = {value: JSON.stringify(value), expires: new Date().getTime() + expireMS}
+      var entry = {value: JSON.stringify(value), expires: expireMS}
       localStorage.setItem(key, JSON.stringify(entry));
-      return value;
     },
     getItem: function(key){
-      if (!available){return false;}
-
+      if (!available) {
+        if(console && console.log) console.log("Local store is unavailable, expect bad things")
+        return null;
+      }
       var entry = JSON.parse(localStorage.getItem(key));
-      if (!entry){return false;}
-      return (new Date().getTime() < entry.expires && JSON.parse(entry.value));
+      if (entry!=null && (new Date().getTime() < entry.expires)) {
+          return JSON.parse(entry.value)
+      }
+
+      return null;
     },
     isAvailable : function() {
       return available;
